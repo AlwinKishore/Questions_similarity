@@ -97,10 +97,6 @@ def text_to_wordlist(text, remove_stop_words=True, stem_words=False):
     text = re.sub('\+', " plus ", text)
     text = re.sub('\@', " at ", text)
     
-    # replace the float numbers with a random number, it will be parsed as number afterward, and also been replaced with word "number"
-    
-    text = re.sub('[0-9]+\.[0-9]+', " 87 ", text)
-  
     # Remove punctuation from text
     text = ''.join([c for c in text if c not in punctuation]).lower()
     print(text)
@@ -144,12 +140,12 @@ for i in range(0,len(qn_list)):
 print(q1_v)
 
 
-# def jaccard_similarity(list1, list2):
-#     s1 = set(list1)
-#     s2 = set(list2)
-#     return float(len(s1.intersection(s2)) / len(s1.union(s2)))
+def jaccard_similarity(list1, list2):
+    s1 = set(list1)
+    s2 = set(list2)
+    return float(len(s1.intersection(s2)) / len(s1.union(s2)))
 
-# print(jaccard_similarity(q1,q2))
+print(jaccard_similarity(q1,q2))
 
 
 from nltk.corpus import wordnet
