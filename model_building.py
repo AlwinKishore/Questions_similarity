@@ -14,6 +14,7 @@ question2 = str(input("Enter the second question: \n"))
 # print(question1)
 # print(question2)
 
+corpus = [question1,question2]
 
 # pre-processing
 # punctuation removal 
@@ -99,12 +100,12 @@ def text_to_wordlist(text, remove_stop_words=True, stem_words=False):
 
     # add padding to punctuations and special chars, we still need them later
 
-    text = re.sub('\$', " dollar ", text)
-    text = re.sub('\%', " percent ", text)
-    text = re.sub('\&', " and ", text)
+    text = re.sub('$', " dollar ", text)
+    text = re.sub('%', " percent ", text)
+    text = re.sub('&', " and ", text)
     text = re.sub('\*', " asterik ", text)
     text = re.sub('\+', " plus ", text)
-    text = re.sub('\@', " at ", text)
+    text = re.sub('@', " at ", text)
 
     # Remove punctuation from text
     text = ''.join([c for c in text if c not in punctuation]).lower()
@@ -178,18 +179,18 @@ print(most_freq)
 # for i in range(0, len(qn_list)):
 #     k = vectorizer.fit_transform(qn_list[i])
 #     q1_v.append(k)
-
-# from sklearn.feature_extraction.text import CountVectorizer
-#
-# vectorizer = CountVectorizer()
-# X = vectorizer.fit_transform(sen_corpus)
-# print('All the unique words in our corpus-')
-# print(vectorizer.get_feature_names())
-# print('\nTransfomed sentences now look like-')
-# print(X.toarray())
-
-
 # print(q1_v)
+
+
+vectorizer = CountVectorizer(stop_words='english')
+X = vectorizer.fit_transform(corpus)
+print('All the unique words in our corpus-')
+print(vectorizer.get_feature_names())
+print('\nTransfomed sentences now look like-')
+print(X.toarray())
+
+
+
 
 # jaccard similarity
 def jaccard_similarity(list1, list2):
