@@ -1,9 +1,15 @@
 # importing the necessary libraries
 # import pandas as pd
+import numpy as np
+from numpy.linalg import norm
 from string import punctuation
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+from scipy.spatial import distance
+import heapq
+import re
+# from sklearn.metrics.pairwise import euclidean_distances
 
 # sw contains the list of stopwords
 sw = stopwords.words('english')
@@ -21,8 +27,6 @@ corpus = [question1,question2]
 # word conversion
 # tokenization
 # stop word removal 
-import re
-
 
 def text_to_wordlist(text, remove_stop_words=True, stem_words=False):
     # Clean the text, with the option to remove stop_words
@@ -100,7 +104,6 @@ def text_to_wordlist(text, remove_stop_words=True, stem_words=False):
 
     # add padding to punctuations and special chars, we still need them later
 
-    text = re.sub('$', " dollar ", text)
     text = re.sub('%', " percent ", text)
     text = re.sub('&', " and ", text)
     text = re.sub('\*', " asterik ", text)
@@ -112,7 +115,7 @@ def text_to_wordlist(text, remove_stop_words=True, stem_words=False):
     print(text)
 
     text = word_tokenize(text)
-    print(text)
+    print('\n',text)
 
     l1 = [w for w in text if not w in sw]
 
@@ -124,8 +127,8 @@ def text_to_wordlist(text, remove_stop_words=True, stem_words=False):
 q1 = text_to_wordlist(question1)
 q2 = text_to_wordlist(question2)
 
-print(q1)
-print(q2)
+# print(q1)
+# print(q2)
 
 qn_list = [q1, q2]
 # print("Question list:",qn_list)
@@ -152,13 +155,12 @@ for i in range(len(qn_list)):
             DF[w] = {i}
 for i in DF:
     DF[i] = len(DF[i])
-print('TF-IDF:')
-print(DF)
+# print('TF-IDF:')
+# print(DF)
 
-import heapq
 
 most_freq = heapq.nlargest(200, DF, key=DF.get)
-print(most_freq)
+# print(most_freq)
 
 
 # import nltk
@@ -173,60 +175,69 @@ print(most_freq)
 #
 # print(word_idf_values)
 
-# vectorizer = CountVectorizer(ngram_range=(1, 3))
-# # q1_v = vectorizer.fit('q1').vocabulary_
-# q1_v = []
-# for i in range(0, len(qn_list)):
-#     k = vectorizer.fit_transform(qn_list[i])
-#     q1_v.append(k)
-# print(q1_v)
 
-
-vectorizer = CountVectorizer(stop_words='english')
-X = vectorizer.fit_transform(corpus)
-print('All the unique words in our corpus-')
-print(vectorizer.get_feature_names())
-print('\nTransfomed sentences now look like-')
-print(X.toarray())
-
-
-
+# Euclidean Distance
+def euclidean(corpus):
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(corpus)
+    # print('All the unique words in our corpus-')
+    # print(vectorizer.get_feature_names())
+    # print('\nTransfomed sentences now look like-')
+    # print(X.toarray())
+    print("Euclidean Distance: %.2f" %(distance.euclidean(X.getrow(0).toarray()[0],X.getrow(1).toarray()[0])))
+    # print("Euclidean Distance: %.2f" %(euclidean_distances(X.getrow(0),X.getrow(1))))
+    return
 
 # jaccard similarity
 def jaccard_similarity(list1, list2):
     s1 = set(list1)
     s2 = set(list2)
-    return float(len(s1.intersection(s2)) / len(s1.union(s2)))
+    print('Jaccard Similarity: %.4f' %(float(len(s1.intersection(s2)) / len(s1.union(s2)))))
+    return
 
-
-print('Jaccard Similarity: %.4f' % jaccard_similarity(q1, q2))
 
 # cosine similarity
-l1 = []
-l2 = []
+def cosine(q1,q2):
+    l1 = []
+    l2 = []
 
-# remove stop words from the string
-X_set = set(q1)
-Y_set = set(q2)
+    # remove stop words from the string
+    X_set = set(q1)
+    Y_set = set(q2)
 
-# form a set containing keywords of both strings
-rvector = X_set.union(Y_set)
-for w in rvector:
-    if w in X_set:
-        l1.append(1)  # create a vector
-    else:
-        l1.append(0)
-    if w in Y_set:
-        l2.append(1)
-    else:
-        l2.append(0)
-c = 0
+    # form a set containing keywords of both strings
+    rvector = X_set.union(Y_set)
+    for w in rvector:
+        if w in X_set:
+            l1.append(1)  # create a vector
+        else:
+            l1.append(0)
+        if w in Y_set:
+            l2.append(1)
+        else:
+            l2.append(0)
 
-# cosine formula
-for i in range(len(rvector)):
-    c += l1[i] * l2[i]
-cosine = c / float((sum(l1) * sum(l2)) ** 0.5)
-print("Cosine similarity: ", cosine)
+    # define two arrays
+    A = np.array(l1)
+    B = np.array(l2)
+
+    # print("A:\n", A)
+    # print("B:\n", B)
+
+    # compute cosine similarity
+    c = np.dot(A, B) / (norm(A) * norm(B))
+    print("Cosine Similarity:", c)
+
+# calling cosine function
+cosine(q1,q2)
+
+# calling jaccard_similarity function
+jaccard_similarity(q1, q2)
+
+# calling euclidean function
+euclidean(corpus)
+
+
 
 # from nltk.corpus import wordnet
 #
